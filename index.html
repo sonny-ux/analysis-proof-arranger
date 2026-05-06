@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Analysis — Proof Arrangement Worksheet</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="document.addEventListener('DOMContentLoaded',()=>{init();})"></script>
+<style>
+:root{
+  --bg:#fafaf8;--card:#fff;--border:#e2ddd6;--border2:#ccc8c0;
+  --text:#1c1917;--muted:#78716c;--subtle:#a8a29e;
+  --acc:#1d4ed8;--accbg:#eff6ff;--accbd:#bfdbfe;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;overflow-x:hidden;}
+
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(250,250,248,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+.navs{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.navs::-webkit-scrollbar{display:none;}
+.nt{flex-shrink:0;padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.nt:hover{color:var(--text);}
+.nt.active{color:var(--acc);border-bottom-color:var(--acc);}
+.pbar{height:2px;background:var(--border);}
+.pfill{height:100%;background:var(--acc);width:0%;transition:width .15s;}
+
+/* SCORE BAR */
+.scorebar{position:fixed;bottom:0;left:0;right:0;z-index:190;background:rgba(250,250,248,.97);border-top:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;gap:16px;}
+.score-txt{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);}
+.score-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:500;color:var(--acc);}
+
+/* PAGES */
+.page{display:none;padding:54px 0 60px;}
+.page.active{display:block;}
+
+/* SECTION HEADER */
+.ps-header{padding:24px 20px 14px;border-bottom:1px solid var(--border);}
+.ps-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;padding:3px 9px;border-radius:2px;background:var(--accbg);color:var(--acc);margin-bottom:10px;}
+.ps-header h1{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:600;line-height:1.3;margin-bottom:6px;}
+.ps-desc{font-size:.88rem;color:var(--muted);font-style:italic;}
+
+/* PROBLEM CARD */
+.prob{border:1px solid var(--border);border-radius:4px;margin:14px 20px;overflow:hidden;background:var(--card);}
+.prob-header{padding:12px 16px;background:#f8f8f8;border-bottom:1px solid var(--border);}
+.prob-num{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--subtle);margin-bottom:4px;}
+.prob-title{font-family:'Cinzel',serif;font-size:.95rem;font-weight:600;margin-bottom:3px;}
+.prob-src{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--subtle);}
+.prob-stmt{padding:12px 16px;font-size:.9rem;line-height:1.7;border-bottom:1px solid var(--border);background:#fefefe;}
+.prob-stmt strong{color:var(--acc);}
+
+/* INSTRUCTIONS LINE */
+.arrange-label{padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.15em;color:var(--subtle);text-transform:uppercase;border-bottom:1px solid var(--border);}
+
+/* STEP CARDS */
+.steps-grid{padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
+.step{border:1px solid var(--border);border-radius:3px;padding:11px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:10px;background:var(--card);user-select:none;-webkit-tap-highlight-color:transparent;}
+.step:hover{border-color:var(--acc);background:var(--accbg);}
+.step.selected{border-color:var(--acc);background:var(--accbg);}
+.step.correct{border-color:#16a34a;background:#f0fdf4;}
+.step.wrong{border-color:#e11d48;background:#fff1f2;}
+.step.revealed-ok{border-color:#16a34a;background:#f0fdf4;opacity:.85;}
+.step.revealed-no{border-color:var(--border);background:var(--bg);opacity:.7;}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:.75rem;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border:1px solid var(--border);background:var(--bg);color:var(--subtle);}
+.step.selected .step-badge{background:var(--acc);color:#fff;border-color:var(--acc);}
+.step.correct .step-badge{background:#16a34a;color:#fff;border-color:#16a34a;}
+.step.wrong .step-badge{background:#e11d48;color:#fff;border-color:#e11d48;}
+.step-text{font-size:.9rem;line-height:1.65;flex:1;}
+
+/* BUTTONS */
+.btn-row{padding:10px 16px 14px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);}
+.btn{padding:7px 14px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .12s;-webkit-tap-highlight-color:transparent;}
+.btn-check{background:var(--acc);color:#fff;border-color:var(--acc);}
+.btn-check:hover{opacity:.85;}
+.btn-reset{background:var(--bg);color:var(--muted);border-color:var(--border);}
+.btn-reset:hover{border-color:var(--border2);color:var(--text);}
+.btn-reveal{background:#fffbeb;color:#b45309;border-color:#fde68a;}
+.btn-reveal:hover{background:#fef3c7;}
+.btn-check:disabled{opacity:.45;cursor:default;}
+
+/* FEEDBACK */
+.feedback{display:none;padding:10px 16px;font-size:.88rem;line-height:1.65;}
+.feedback.show{display:block;}
+.fb-ok{background:#f0fdf4;border-top:1px solid #bbf7d0;color:#166534;}
+.fb-no{background:#fff1f2;border-top:1px solid #fecdd3;color:#9b1c1c;}
+.reveal-note{background:#fffbeb;border-top:1px solid #fde68a;padding:10px 16px;font-size:.83rem;color:var(--muted);display:none;}
+.reveal-note.show{display:block;}
+.reveal-note strong{color:var(--text);}
+
+/* PROGRESS within page */
+.page-progress{padding:6px 20px 0;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--subtle);text-align:right;}
+
+/* TABLET */
+@media(min-width:601px) and (max-width:1100px){
+  body{font-size:18px;}
+  .prob{margin:14px 32px;}
+  .step{padding:13px 16px;min-height:52px;}
+  .prob-stmt{padding:14px 20px;}
+  .steps-grid{padding:14px 20px;}
+  .btn-row{padding:12px 20px 16px;}
+  .ps-header{padding:28px 32px 16px;}
+  .page-progress{padding:8px 32px 0;}
+  .arrange-label,.feedback,.reveal-note{padding-left:20px;padding-right:20px;}
+}
+@media(max-width:600px){body{font-size:16px;}.prob{margin:10px 12px;}.ps-header{padding:18px 14px 10px;}.ps-header h1{font-size:1.3rem;}}
+.katex{font-size:.97em;}
+.katex-display{overflow-x:auto;margin:.3em 0;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="navs" id="navs"></div>
+  <div class="pbar"><div class="pfill" id="pfill"></div></div>
+</nav>
+
+<div id="pages"></div>
+
+<div class="scorebar">
+  <span class="score-txt">Score</span>
+  <span class="score-val" id="score-val">0 / 32</span>
+  <span class="score-txt" id="score-pct" style="margin-left:4px"></span>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+// Each problem: { ps, pnum, title, src, stmt, steps: [{t, r}] }
+// t = step text (may contain $ math $)
+// r = correct rank (0 = first step, 1 = second, etc.)
+// Steps listed in DISPLAY order (shuffled); r tells the correct position.
+
+const PS = [
+  { label:"PS 1", topic:"Real Numbers & Set Theory", probs:[
+
+    { pnum:1, title:"Additive Inverse is Unique", src:"PS1 Exercise 6.2",
+      stmt:"Using the field axioms, prove that the additive inverse of any $x \\in \\mathbb{R}$ is unique.",
+      steps:[
+        {t:"By associativity (A3): $y+(x+z)=(y+x)+z$.", r:2},
+        {t:"Suppose $y$ and $z$ are both additive inverses of $x$, so $x+y=0$ and $x+z=0$.", r:0},
+        {t:"So $(y+x)+z = 0+z = z$ by axiom (A4).", r:4},
+        {t:"Then $y = y+0 = y+(x+z)$, using $x+z=0$.", r:1},
+        {t:"Since $x+y=0$, commutativity (A2) gives $y+x=0$.", r:3},
+        {t:"Combining: $y=z$.", r:5},
+      ]},
+
+    { pnum:2, title:"$-(-x)=x$", src:"PS1 Exercise 6.5",
+      stmt:"Using the field axioms (and the uniqueness of additive inverses), prove that $-(-x)=x$ for all $x\\in\\mathbb{R}$.",
+      steps:[
+        {t:"$-(-x)$ is defined as the unique additive inverse of $-x$.", r:3},
+        {t:"By definition of additive inverse: $x+(-x)=0$.", r:0},
+        {t:"Therefore $-(-x)=x$.", r:4},
+        {t:"This equation also says that $x$ is an additive inverse of $-x$.", r:1},
+        {t:"Since additive inverses are unique (proved in Ex 6.2), the additive inverse of $-x$ is exactly $x$.", r:2},
+      ]},
+
+    { pnum:3, title:"Infimum Exists for Sets Bounded Below", src:"PS1 Exercise 7",
+      stmt:"Let $X \\subseteq \\mathbb{R}$ be nonempty and bounded below. Prove that $\\inf X$ exists in $\\mathbb{R}$.",
+      steps:[
+        {t:"Since $X$ is bounded below by $m$: $m \\leq x$ for all $x$, so $-m \\geq -x$ for all $-x\\in -X$. Thus $-X$ is bounded above.", r:1},
+        {t:"We claim $\\inf X = -\\alpha$. For any $x\\in X$: $-x \\leq \\alpha$, so $x \\geq -\\alpha$. Hence $-\\alpha$ is a lower bound of $X$.", r:3},
+        {t:"Let $-X = \\{-x : x\\in X\\}$. Since $X\\neq\\emptyset$, we have $-X\\neq\\emptyset$.", r:0},
+        {t:"If $\\beta > -\\alpha$, then $-\\beta < \\alpha = \\sup(-X)$, so $\\exists {-x}\\in -X$ with $-x > -\\beta$, i.e., $x < \\beta$.", r:4},
+        {t:"By the LUB property, $\\alpha = \\sup(-X)$ exists in $\\mathbb{R}$.", r:2},
+        {t:"So $\\beta$ is not a lower bound of $X$. This confirms $-\\alpha = \\inf X$.", r:5},
+      ]},
+
+    { pnum:4, title:"De Morgan's Law: $(A\\cup B)^c = A^c\\cap B^c$", src:"PS1 Exercise 4.1",
+      stmt:"Let $A, B \\subseteq X$. Prove that $(A\\cup B)^c = A^c \\cap B^c$.",
+      steps:[
+        {t:"Conversely, let $x\\in A^c\\cap B^c$. Then $x\\notin A$ and $x\\notin B$.", r:3},
+        {t:"So $x\\notin A\\cup B$, meaning $x\\in(A\\cup B)^c$.", r:4},
+        {t:"Let $x\\in(A\\cup B)^c$. Then $x\\notin A\\cup B$.", r:0},
+        {t:"Since both inclusions hold, $(A\\cup B)^c = A^c\\cap B^c$.", r:5},
+        {t:"This means $x\\notin A$ and $x\\notin B$, so $x\\in A^c$ and $x\\in B^c$, hence $x\\in A^c\\cap B^c$.", r:1},
+        {t:"We have shown $(A\\cup B)^c \\subseteq A^c\\cap B^c$ (steps 1–3) and $A^c\\cap B^c\\subseteq(A\\cup B)^c$ (steps 4–5).", r:2},
+      ]},
+  ]},
+
+  { label:"PS 3", topic:"Basic Topology", probs:[
+
+    { pnum:1, title:"$\\sup A \\in A$ when $A$ is Closed and Bounded", src:"PS3 Exercise 4",
+      stmt:"Let $A\\subseteq\\mathbb{R}$ be nonempty, bounded, and closed. Prove that $\\sup A \\in A$.",
+      steps:[
+        {t:"Since $A$ is closed: $A = \\bar{A}$ (Thm 2.27b). Therefore $\\sup A \\in A$.", r:4},
+        {t:"$A$ is nonempty and bounded above, so $s = \\sup A$ exists by the LUB property.", r:0},
+        {t:"Thus every neighborhood of $s$ contains a point of $A$ distinct from $s$, so $s$ is a limit point of $A$.", r:3},
+        {t:"If $s\\in A$ we are done. If $s\\notin A$: for any $\\varepsilon>0$, $s-\\varepsilon$ is not an upper bound, so $\\exists x\\in A$ with $s-\\varepsilon < x \\leq s$.", r:1},
+        {t:"Since $s\\notin A$ and $x\\in A$, we have $x\\neq s$, so $x\\in A\\cap N_\\varepsilon(s)$ with $x\\neq s$.", r:2},
+        {t:"Hence $s\\in\\bar{A}$ (Thm 2.28).", r:3.5},
+      ]},
+
+    { pnum:2, title:"Closure $\\bar{A}$ is Closed", src:"PS3 Exercise 5b",
+      stmt:"Let $(X,d)$ be a metric space and $A\\subseteq X$. Prove that $\\bar{A}$ is closed.",
+      steps:[
+        {t:"No point of $N$ is a limit point of $A$ (since $N\\cap A = \\emptyset$), so every point of $N$ lies in $\\bar{A}^c$.", r:3},
+        {t:"We show $\\bar{A}^c$ is open. Let $p\\in\\bar{A}^c$.", r:0},
+        {t:"Since $\\bar{A}^c$ is open, $\\bar{A}$ is closed (Thm 2.23).", r:4},
+        {t:"Then $p\\notin A$ and $p$ is not a limit point of $A$. So $\\exists$ neighborhood $N$ of $p$ with $N\\cap A = \\emptyset$.", r:1},
+        {t:"Therefore $p$ is an interior point of $\\bar{A}^c$. Since $p$ was arbitrary, $\\bar{A}^c$ is open.", r:3.5},
+        {t:"This means $p$ is not a limit point of $\\bar{A}$, so $N \\subseteq \\bar{A}^c$.", r:2},
+      ]},
+
+    { pnum:3, title:"$A=\\{0\\}\\cup\\{1/n\\}$ is Compact", src:"PS3 Exercise 7",
+      stmt:"Show that the set $A = \\{0\\} \\cup \\{1/n : n\\in\\mathbb{N},\\, n>0\\} \\subseteq \\mathbb{R}$ is compact.",
+      steps:[
+        {t:"We show $A$ is closed. The only candidate limit points are: since $1/n\\to 0$, the point $0$ is a limit point.", r:1},
+        {t:"By Heine-Borel (Thm 2.41): $A$ is closed and bounded in $\\mathbb{R}$, hence compact.", r:4},
+        {t:"All elements of $A$ satisfy $0\\leq a\\leq 1$, so $A$ is bounded.", r:0},
+        {t:"For $p\\neq 0$: only finitely many $1/n$ lie within $|p|/2$ of $p$, so the minimum distance from $p$ to the rest of $A$ is some $r > 0$. Then $N_r(p)$ contains no other point of $A$.", r:2},
+        {t:"Since $0\\in A$, all limit points of $A$ are in $A$. Therefore $A$ is closed.", r:3},
+      ]},
+
+    { pnum:4, title:"$\\operatorname{diam}(A) = \\operatorname{diam}(\\bar{A})$", src:"PS3 Exercise 8",
+      stmt:"Let $(X,d)$ be a metric space and $A\\subset X$ bounded. Prove that $\\operatorname{diam}(A) = \\operatorname{diam}(\\bar{A})$.",
+      steps:[
+        {t:"Therefore $\\operatorname{diam}(\\bar{A}) \\leq \\operatorname{diam}(A)$. Combined with step 1: equality holds.", r:4},
+        {t:"Since $A\\subseteq\\bar{A}$, clearly $\\operatorname{diam}(A) \\leq \\operatorname{diam}(\\bar{A})$.", r:0},
+        {t:"For any $p,q\\in\\bar{A}$ and $\\varepsilon>0$: since $p,q\\in\\bar{A}$, $\\exists p'\\in A$ with $d(p,p')<\\varepsilon$ and $\\exists q'\\in A$ with $d(q,q')<\\varepsilon$.", r:1},
+        {t:"By the triangle inequality: $d(p,q) \\leq d(p,p') + d(p',q') + d(q',q) < \\operatorname{diam}(A) + 2\\varepsilon$.", r:2},
+        {t:"Since $\\varepsilon>0$ was arbitrary, $d(p,q)\\leq\\operatorname{diam}(A)$ for all $p,q\\in\\bar{A}$.", r:3},
+      ]},
+  ]},
+
+  { label:"PS 4", topic:"Topology II: Compactness & Connectedness", probs:[
+
+    { pnum:1, title:"Relative Topology Characterization", src:"PS4 Exercise 4",
+      stmt:"Let $A\\subseteq Y\\subseteq X$. Prove that $A$ is open relative to $Y$ if and only if $A = Y\\cap B$ for some open $B\\subseteq X$.",
+      steps:[
+        {t:"$(\\Leftarrow)$: Suppose $A = Y\\cap G$ for open $G\\subseteq X$. For any $p\\in A$: $p\\in G$, so $\\exists r>0$: $N_r(p)\\subseteq G$ in $X$.", r:3},
+        {t:"$(\\Rightarrow)$: Suppose $A$ is open relative to $Y$. For each $p\\in A$, $\\exists r_p>0$: $\\{q\\in Y: d(p,q)<r_p\\}\\subseteq A$.", r:0},
+        {t:"Then $\\{q\\in Y: d(p,q)<r\\} = N_r(p)\\cap Y \\subseteq G\\cap Y = A$. So $p$ is interior to $A$ in $Y$.", r:4},
+        {t:"Let $G = \\bigcup_{p\\in A} N_{r_p}(p)$. This is a union of open sets, hence open in $X$ (Thm 2.24a).", r:1},
+        {t:"Since each $p\\in A$ lies in $N_{r_p}(p)\\cap Y \\subseteq A$, we get $A = G\\cap Y$.", r:2},
+        {t:"Since $p\\in A$ was arbitrary, $A$ is open relative to $Y$.", r:5},
+      ]},
+
+    { pnum:2, title:"Connected Subsets of $\\mathbb{R}$ Have the Betweenness Property", src:"PS4 Exercise 7",
+      stmt:"Prove: if $E\\subseteq\\mathbb{R}$ is connected, then $x,y\\in E$ and $x<z<y$ implies $z\\in E$.",
+      steps:[
+        {t:"Since $A\\cup B = E$ with $A,B$ nonempty and separated, $E$ is not connected — contradiction.", r:4},
+        {t:"Both $A$ and $B$ are nonempty: $x\\in A$, $y\\in B$.", r:1},
+        {t:"Suppose $E$ is connected. For contradiction, suppose $x,y\\in E$, $x<z<y$, but $z\\notin E$.", r:0},
+        {t:"Let $A = E\\cap(-\\infty,z)$ and $B = E\\cap(z,\\infty)$.", r:0.5},
+        {t:"$A$ and $B$ are separated: $\\bar{A}\\cap B \\subseteq (-\\infty,z]\\cap(z,\\infty) = \\emptyset$, and similarly $A\\cap\\bar{B}=\\emptyset$.", r:2},
+        {t:"We have $A\\cup B = E$ since $z\\notin E$.", r:3},
+      ]},
+
+    { pnum:3, title:"Compact $\\Rightarrow$ Limit-Point Compact", src:"PS4 Exercise 8",
+      stmt:"Let $(X,d)$ be a metric space and $A\\subseteq X$ compact. Prove that $A$ is limit-point compact: every infinite subset of $A$ has a limit point in $A$.",
+      steps:[
+        {t:"Each $V_q$ contains at most one point of $E$ (namely $q$, if $q\\in E$). So $E$ has at most $n$ points — contradicting $E$ being infinite.", r:4},
+        {t:"Suppose $E$ has no limit point in $A$. Then every $q\\in A$ has a neighborhood $V_q$ containing no point of $E$ other than possibly $q$ itself.", r:1},
+        {t:"Therefore $E$ has a limit point in $A$, so $A$ is limit-point compact.", r:5},
+        {t:"Let $E$ be an infinite subset of $A$.", r:0},
+        {t:"Since $A$ is compact, the open cover $\\{V_q : q\\in A\\}$ has a finite subcover: $A\\subseteq V_{q_1}\\cup\\cdots\\cup V_{q_n}$.", r:3},
+        {t:"$\\{V_q : q\\in A\\}$ is an open cover of $A$.", r:2},
+      ]},
+
+    { pnum:4, title:"$\\mathbb{R}^n$ is Separable", src:"PS4 Exercise 3",
+      stmt:"Prove that $\\mathbb{R}^n$ is separable, i.e., it has a countable dense subset.",
+      steps:[
+        {t:"By the density of $\\mathbb{Q}$ in $\\mathbb{R}$ (Thm 1.20b), for each $i$, $\\exists q_i\\in\\mathbb{Q}$ with $|x_i - q_i| < \\varepsilon/\\sqrt{n}$.", r:2},
+        {t:"Since $\\mathbb{Q}$ is countable and the finite Cartesian product of countable sets is countable (Thm 2.13), $\\mathbb{Q}^n$ is countable.", r:0},
+        {t:"Since $\\mathbb{Q}^n$ is a countable dense subset of $\\mathbb{R}^n$, we conclude $\\mathbb{R}^n$ is separable.", r:4},
+        {t:"Let $\\mathbf{q}=(q_1,\\ldots,q_n)$. Then $|\\mathbf{x}-\\mathbf{q}| = \\sqrt{\\sum|x_i-q_i|^2} < \\sqrt{n\\cdot\\varepsilon^2/n} = \\varepsilon$.", r:3},
+        {t:"To show $\\mathbb{Q}^n$ is dense: let $\\mathbf{x}=(x_1,\\ldots,x_n)\\in\\mathbb{R}^n$ and $\\varepsilon>0$.", r:1},
+      ]},
+  ]},
+
+  { label:"PS 5", topic:"Sequences and Series", probs:[
+
+    { pnum:1, title:"Limits are Unique", src:"PS5 Exercise 7",
+      stmt:"Let $(X,d)$ be a metric space. Show that if $x_n\\to x$ and $x_n\\to y$, then $x=y$.",
+      steps:[
+        {t:"For $n\\geq\\max(N_1,N_2)$: by the triangle inequality, $d(x,y)\\leq d(x,x_n)+d(x_n,y) < \\varepsilon/2 + \\varepsilon/2 = \\varepsilon$.", r:3},
+        {t:"Since $x_n\\to y$, $\\exists N_2$: $n\\geq N_2\\Rightarrow d(x_n,y)<\\varepsilon/2$.", r:2},
+        {t:"Since $\\varepsilon>0$ was arbitrary and $d(x,y)\\geq 0$: $d(x,y)=0$, hence $x=y$.", r:4},
+        {t:"Let $\\varepsilon>0$.", r:0},
+        {t:"Since $x_n\\to x$, $\\exists N_1$: $n\\geq N_1\\Rightarrow d(x_n,x)<\\varepsilon/2$.", r:1},
+      ]},
+
+    { pnum:2, title:"Cauchy Sequences are Bounded", src:"PS5 Exercise 8.1",
+      stmt:"Let $(X,d)$ be a metric space. Show that every Cauchy sequence $\\{x_n\\}$ in $X$ is bounded.",
+      steps:[
+        {t:"Let $M = \\max\\{d(x_1,x_N),\\, d(x_2,x_N),\\,\\ldots,\\, d(x_{N-1},x_N),\\, 1\\}$ (finite maximum).", r:2},
+        {t:"Apply the Cauchy definition with $\\varepsilon=1$: $\\exists N$ s.t. $m,n\\geq N\\Rightarrow d(x_m,x_n)<1$.", r:0},
+        {t:"For $n\\geq N$: $d(x_n,x_N)<1\\leq M$. For $n<N$: $d(x_n,x_N)\\leq M$ by definition.", r:3},
+        {t:"In particular, $n\\geq N\\Rightarrow d(x_n,x_N)<1$.", r:1},
+        {t:"Therefore all terms lie in $\\overline{B_M(x_N)}$, so $\\{x_n\\}$ is bounded.", r:4},
+      ]},
+
+    { pnum:3, title:"$s_1=\\sqrt{2},\\; s_{n+1}=\\sqrt{2+s_n}$ Converges to 2", src:"PS5 Exercise 3",
+      stmt:"Define $s_1=\\sqrt{2}$ and $s_{n+1}=\\sqrt{2+s_n}$. Prove $s_n\\to 2$.",
+      steps:[
+        {t:"By the Monotone Convergence Theorem, $L=\\lim_{n\\to\\infty}s_n$ exists.", r:2},
+        {t:"$\\{s_n\\}$ is increasing: $s_{n+1}>s_n \\Leftrightarrow (s_n-2)(s_n+1)<0 \\Leftrightarrow s_n<2$. ✓", r:1},
+        {t:"Taking limits in $s_{n+1}=\\sqrt{2+s_n}$: $L=\\sqrt{2+L}$, so $L^2-L-2=0$, i.e., $(L-2)(L+1)=0$.", r:3},
+        {t:"$\\{s_n\\}$ is bounded above by 2: if $s_n<2$ then $s_{n+1}=\\sqrt{2+s_n}<\\sqrt{4}=2$. (By induction, $s_1=\\sqrt{2}<2$.)", r:0},
+        {t:"Since $L\\geq s_1=\\sqrt{2}>0$, we get $L=2$.", r:4},
+      ]},
+
+    { pnum:4, title:"Set of Subsequential Limits is Closed", src:"PS5 Exercise 1",
+      stmt:"Let $\\{x_n\\}$ be a bounded sequence in $\\mathbb{R}$ and let $\\mathcal{A}$ be its set of subsequential limits. Show $\\mathcal{A}$ is closed.",
+      steps:[
+        {t:"We show $\\mathcal{A}$ contains all its limit points. Let $y$ be a limit point of $\\mathcal{A}$.", r:0},
+        {t:"Since $a_k\\in\\mathcal{A}$ is a subsequential limit, $\\exists n_k$ with $|x_{n_k}-a_k|<1/k$.", r:2},
+        {t:"Therefore $y\\in\\mathcal{A}$. Since every limit point of $\\mathcal{A}$ is in $\\mathcal{A}$, $\\mathcal{A}$ is closed.", r:4},
+        {t:"For each $k$, $\\exists a_k\\in\\mathcal{A}$ with $|a_k - y|<1/k$ (since $y$ is a limit point of $\\mathcal{A}$).", r:1},
+        {t:"Then $|x_{n_k}-y| \\leq |x_{n_k}-a_k|+|a_k-y| < 2/k\\to 0$, so $x_{n_k}\\to y$.", r:3},
+      ]},
+  ]},
+
+  { label:"PS 6", topic:"Series and Continuity", probs:[
+
+    { pnum:1, title:"Leibniz (Alternating Series) Criterion", src:"PS6 Exercise 5",
+      stmt:"Suppose $\\{a_i\\}_{i\\geq 0}$ is non-negative, decreasing, and $a_i\\to 0$. Prove $\\sum_{i=0}^\\infty (-1)^i a_i$ converges.",
+      steps:[
+        {t:"Since $a_{2m+1}\\to 0$: $S_{2m+1} = S_{2m} - a_{2m+1} \\to L - 0 = L$.", r:4},
+        {t:"Let $S_n=\\sum_{i=0}^n(-1)^ia_i$. The even partial sums satisfy $S_{2m+2} = S_{2m}+(a_{2m+1}-a_{2m+2})\\geq S_{2m}$: increasing.", r:0},
+        {t:"Both even and odd partial sums converge to $L$, so $S_n\\to L$.", r:5},
+        {t:"$S_{2m}=a_0-(a_1-a_2)-\\cdots-(a_{2m-1}-a_{2m})\\leq a_0$. So $\\{S_{2m}\\}$ is bounded above.", r:1},
+        {t:"Also $S_{2m}\\geq 0$ (rearranging similarly). So $\\{S_{2m}\\}$ is monotone and bounded.", r:2},
+        {t:"By the Monotone Convergence Theorem, $S_{2m}\\to L$ for some $L$.", r:3},
+      ]},
+
+    { pnum:2, title:"Root Test: $\\limsup |a_n|^{1/n}<1$ implies convergence", src:"PS6 Exercise 2",
+      stmt:"Let $\\alpha = \\limsup_{n\\to\\infty}|a_n|^{1/n} < 1$. Prove $\\sum a_n$ converges absolutely.",
+      steps:[
+        {t:"By the comparison test, $\\sum_{n=N}^\\infty|a_n|$ converges.", r:4},
+        {t:"Choose $r$ with $\\alpha < r < 1$. By definition of $\\limsup$, $\\exists N$: $|a_n|^{1/n} < r$ for all $n\\geq N$.", r:1},
+        {t:"Therefore $\\sum a_n$ converges absolutely.", r:5},
+        {t:"Let $\\alpha = \\limsup_{n\\to\\infty}|a_n|^{1/n}<1$.", r:0},
+        {t:"Since $0<r<1$, the geometric series $\\sum_{n=N}^\\infty r^n$ converges.", r:3},
+        {t:"So $|a_n| < r^n$ for all $n\\geq N$.", r:2},
+      ]},
+
+    { pnum:3, title:"Radius of Convergence: Convergence for $|z|<R$", src:"PS6 Exercise 6",
+      stmt:"Let $R = 1/\\limsup|a_i|^{1/i}$ be the radius of convergence of $\\sum a_iz^i$. Prove the series converges absolutely for $|z|<R$.",
+      steps:[
+        {t:"So $|a_iz^i| = |a_i|\\cdot|z|^i < (r/|z|)^i\\cdot|z|^i = r^i$ for $i\\geq N$.", r:3},
+        {t:"Since $r<1$, $\\sum r^i$ is a convergent geometric series. By comparison, $\\sum |a_iz^i|$ converges.", r:4},
+        {t:"Let $|z|<R$, so $|z|\\rho < 1$ where $\\rho = \\limsup|a_i|^{1/i}$. Choose $r$ with $|z|\\rho < r < 1$.", r:0},
+        {t:"Therefore $\\sum a_iz^i$ converges absolutely for $|z|<R$.", r:5},
+        {t:"By definition of $\\limsup$, $\\exists N$: $|a_i|^{1/i} < r/|z|$ for all $i\\geq N$.", r:2},
+        {t:"Equivalently, $|a_i|^{1/i}\\cdot|z| < r$ for $i\\geq N$.", r:1},
+      ]},
+
+    { pnum:4, title:"Euler's Identity: $\\exp(iz) = \\cos z + i\\sin z$", src:"PS6 Exercise 7",
+      stmt:"Using the power series definitions of $\\exp$, $\\cos$, $\\sin$, prove Euler's identity $e^{iz} = \\cos z + i\\sin z$.",
+      steps:[
+        {t:"Odd terms: $(iz)^{2k+1} = i^{2k}\\cdot iz^{2k+1} = (-1)^k\\cdot iz^{2k+1}$. So their sum is $i\\sum_{k=0}^\\infty\\frac{(-1)^kz^{2k+1}}{(2k+1)!} = i\\sin z$.", r:3},
+        {t:"By definition: $\\exp(iz) = \\sum_{n=0}^\\infty \\frac{(iz)^n}{n!}$. All three series converge absolutely for all $z\\in\\mathbb{C}$ (ratio test gives radius $\\infty$).", r:0},
+        {t:"Therefore $\\exp(iz) = \\cos z + i\\sin z$.", r:4},
+        {t:"Separate into even and odd powers: $\\exp(iz) = \\sum_{k=0}^\\infty\\frac{(iz)^{2k}}{(2k)!} + \\sum_{k=0}^\\infty\\frac{(iz)^{2k+1}}{(2k+1)!}$.", r:1},
+        {t:"Even terms: $(iz)^{2k} = i^{2k}z^{2k} = (-1)^kz^{2k}$. So their sum is $\\sum_{k=0}^\\infty\\frac{(-1)^kz^{2k}}{(2k)!} = \\cos z$.", r:2},
+      ]},
+  ]},
+
+  { label:"PS 7", topic:"Continuity and Differentiation", probs:[
+
+    { pnum:1, title:"Monotone Functions Have Countably Many Discontinuities", src:"PS7 Exercise 2",
+      stmt:"Let $f:\\mathbb{R}\\to\\mathbb{R}$ be monotonically increasing. Prove the set of discontinuities of $f$ is at most countable.",
+      steps:[
+        {t:"Since $\\mathbb{Q}$ is countable (Thm 2.13) and $E$ injects into $\\mathbb{Q}$, the set of discontinuities $E$ is at most countable.", r:4},
+        {t:"At each discontinuity $x$, one-sided limits $f(x-)$ and $f(x+)$ exist (Thm 4.29), and $f(x-)<f(x+)$.", r:0},
+        {t:"By density of $\\mathbb{Q}$ (Thm 1.20b), $\\exists r(x)\\in\\mathbb{Q}$ with $f(x-)<r(x)<f(x+)$.", r:1},
+        {t:"If $x_1<x_2$ are two discontinuities: since $f$ is increasing, $f(x_1+)\\leq f(x_2-)$, so $r(x_1)<f(x_1+)\\leq f(x_2-)<r(x_2)$. Hence $r(x_1)\\neq r(x_2)$.", r:2},
+        {t:"So the map $x\\mapsto r(x)$ from discontinuities to $\\mathbb{Q}$ is injective.", r:3},
+      ]},
+
+    { pnum:2, title:"$|f(x)-f(y)|\\leq(x-y)^2 \\Rightarrow f$ is Constant", src:"PS7 Exercise 4",
+      stmt:"Suppose $f:\\mathbb{R}\\to\\mathbb{R}$ satisfies $|f(x)-f(y)|\\leq(x-y)^2$ for all $x,y$. Show $f$ is constant.",
+      steps:[
+        {t:"By MVT: $\\exists c\\in(a,b)$ with $f(b)-f(a) = f'(c)(b-a) = 0$. So $f(a)=f(b)$.", r:3},
+        {t:"For $x\\neq y$: divide by $|x-y|>0$: $\\left|\\frac{f(x)-f(y)}{x-y}\\right| \\leq |x-y|$.", r:0},
+        {t:"Since $a,b$ were arbitrary, $f$ is constant.", r:4},
+        {t:"Taking $y\\to x$: $|f'(x)| = \\lim_{y\\to x}|\\frac{f(x)-f(y)}{x-y}|\\leq\\lim_{y\\to x}|x-y| = 0$, so $f'(x)=0$ for all $x$.", r:1},
+        {t:"For any $a<b$: $f$ is differentiable (hence continuous) on $[a,b]$, with $f'=0$ on $(a,b)$.", r:2},
+      ]},
+
+    { pnum:3, title:"$f'\\geq 0$ Implies $f$ Monotonically Increasing", src:"PS7 Exercise 7",
+      stmt:"Let $f:[0,1]\\to\\mathbb{R}$ be differentiable with $f'(x)\\geq 0$ for all $x$. Prove $f$ is monotonically increasing.",
+      steps:[
+        {t:"By MVT, $\\exists c\\in(a,b)$: $f(b)-f(a) = f'(c)(b-a)$.", r:2},
+        {t:"Let $a<b$ in $[0,1]$. Since $f$ is differentiable, it is continuous on $[a,b]$.", r:0},
+        {t:"So $f$ is monotonically increasing.", r:4},
+        {t:"Since $f'(c)\\geq 0$ and $b-a>0$: $f(b)-f(a)=f'(c)(b-a)\\geq 0$, i.e., $f(b)\\geq f(a)$.", r:3},
+        {t:"$f$ is also differentiable (hence continuous) on $(a,b)$, satisfying all hypotheses of MVT.", r:1},
+      ]},
+
+    { pnum:4, title:"$f(x)=x^2$ is NOT Uniformly Continuous on $\\mathbb{R}_{\\geq 0}$", src:"PS7 Exercise 1",
+      stmt:"Show that $f(x)=x^2$ is continuous but not uniformly continuous on $\\mathbb{R}_{\\geq 0}$.",
+      steps:[
+        {t:"Choose $\\varepsilon=1$. For any $\\delta>0$, let $x=1/\\delta$ and $y=1/\\delta+\\delta/2$.", r:1},
+        {t:"Continuity follows because $f$ is a polynomial; polynomials are continuous everywhere.", r:0},
+        {t:"We exhibit a failure of the uniform continuity definition: $\\exists\\varepsilon>0$ such that no single $\\delta$ works.", r:0.5},
+        {t:"Then $|x-y|=\\delta/2<\\delta$.", r:2},
+        {t:"But $|f(x)-f(y)| = (x+y)(y-x) = \\left(\\frac{2}{\\delta}+\\frac{\\delta}{2}\\right)\\frac{\\delta}{2} = 1 + \\frac{\\delta^2}{4} > 1 = \\varepsilon$.", r:3},
+        {t:"So for every $\\delta>0$ there exist $x,y$ with $|x-y|<\\delta$ but $|f(x)-f(y)|\\geq\\varepsilon$. Not uniformly continuous.", r:4},
+      ]},
+  ]},
+
+  { label:"PS 8", topic:"Riemann Integration", probs:[
+
+    { pnum:1, title:"$\\left|\\int_a^b f\\right|\\leq\\int_a^b|f|$", src:"PS8 Exercise 2.4",
+      stmt:"Let $f\\in\\mathcal{R}[a,b]$. Prove $\\left|\\int_a^b f(x)\\,dx\\right|\\leq\\int_a^b|f(x)|\\,dx$.",
+      steps:[
+        {t:"Since $-|f|\\leq f\\leq |f|$ and $|f|\\in\\mathcal{R}[a,b]$, monotonicity of integration gives $\\int_a^b f\\leq\\int_a^b|f|$.", r:1},
+        {t:"Therefore $\\left|\\int_a^b f\\right|\\leq\\int_a^b|f|$.", r:3},
+        {t:"For all $x\\in[a,b]$: $-|f(x)|\\leq f(x)\\leq|f(x)|$.", r:0},
+        {t:"Combining: $-\\int_a^b|f| \\leq \\int_a^b f \\leq \\int_a^b|f|$, which is exactly $\\left|\\int_a^b f\\right|\\leq\\int_a^b|f|$.", r:2},
+        {t:"Applying to $-f$: $\\int_a^b(-f) = -\\int_a^b f\\leq\\int_a^b|f|$.", r:1.5},
+      ]},
+
+    { pnum:2, title:"Integration by Parts", src:"PS8 Exercise 3",
+      stmt:"Let $u,v$ be $C^1$ on $[a,b]$. Prove $\\int_a^b u'v\\,dx = u(b)v(b)-u(a)v(a)-\\int_a^b uv'\\,dx$.",
+      steps:[
+        {t:"FTC Part 2 applied to $(uv)'$: $\\int_a^b(uv)'\\,dx = u(b)v(b)-u(a)v(a)$.", r:2},
+        {t:"Since $u,v$ are $C^1$, by the product rule: $(uv)' = u'v+uv'$ everywhere on $[a,b]$.", r:0},
+        {t:"Rearranging: $\\int_a^b u'v\\,dx = u(b)v(b)-u(a)v(a)-\\int_a^b uv'\\,dx$.", r:3},
+        {t:"Integrating: $\\int_a^b(uv)'\\,dx = \\int_a^b u'v\\,dx+\\int_a^b uv'\\,dx$.", r:1},
+      ]},
+
+    { pnum:3, title:"Continuous $\\Rightarrow$ Riemann Integrable", src:"Rudin Thm 6.8",
+      stmt:"Let $f$ be continuous on $[a,b]$. Prove $f\\in\\mathcal{R}[a,b]$.",
+      steps:[
+        {t:"By uniform continuity, $|x-y|<\\delta\\Rightarrow|f(x)-f(y)|<\\varepsilon/(b-a)$.", r:2},
+        {t:"Since $[a,b]$ is compact and $f$ is continuous, $f$ is uniformly continuous on $[a,b]$ (Thm 4.19).", r:0},
+        {t:"By the Riemann criterion (Thm 6.6), $f\\in\\mathcal{R}[a,b]$.", r:4},
+        {t:"On each subinterval $[x_{i-1},x_i]$ of any partition with mesh $<\\delta$: $M_i-m_i < \\varepsilon/(b-a)$.", r:3},
+        {t:"Given $\\varepsilon>0$, by uniform continuity $\\exists\\delta>0$ with the above property.", r:1},
+        {t:"Thus $U(P,f)-L(P,f)=\\sum(M_i-m_i)\\Delta x_i < \\frac{\\varepsilon}{b-a}\\sum\\Delta x_i = \\varepsilon$.", r:3.5},
+      ]},
+
+    { pnum:4, title:"Fundamental Lemma of Calculus of Variations", src:"PS8 Exercise 8",
+      stmt:"Let $f:[a,b]\\to\\mathbb{R}$ be continuous with $\\int_a^b f(x)\\varphi(x)\\,dx=0$ for all continuous $\\varphi$. Show $f\\equiv 0$.",
+      steps:[
+        {t:"By continuity of $f^2$, $\\exists\\eta>0$: $f(x)^2\\geq\\tfrac{1}{2}f(x_0)^2>0$ for $x\\in(x_0-\\eta,x_0+\\eta)\\cap[a,b]$.", r:3},
+        {t:"Choose $\\varphi=f$ (allowed since $f$ is continuous). Then $0 = \\int_a^b f\\cdot f\\,dx = \\int_a^b[f(x)]^2\\,dx$.", r:1},
+        {t:"Then $\\int_a^b f^2\\geq\\tfrac{1}{2}f(x_0)^2\\cdot 2\\eta>0$, contradicting $\\int f^2=0$.", r:4},
+        {t:"Suppose $f$ is continuous on $[a,b]$ with $\\int f\\varphi=0$ for all continuous $\\varphi$.", r:0},
+        {t:"Suppose for contradiction $f(x_0)^2>0$ for some $x_0\\in[a,b]$.", r:2},
+        {t:"Therefore $f(x)^2=0$ for all $x$, so $f\\equiv 0$.", r:5},
+      ]},
+  ]},
+
+  { label:"PS 9", topic:"Sequences of Functions", probs:[
+
+    { pnum:1, title:"Uniform Convergence of Bounded Products", src:"PS9 Exercise 1a",
+      stmt:"Let $f_n\\to f$ and $g_n\\to g$ uniformly with $|f_n|\\leq M$ and $|g_n|\\leq N$ for all $n$. Prove $f_ng_n\\to fg$ uniformly.",
+      steps:[
+        {t:"Since $f_n\\to f$ uniformly, $|f|\\leq M$. Similarly $|g|\\leq N$.", r:1},
+        {t:"Since $\\|f_n-f\\|_\\infty\\to 0$ and $\\|g_n-g\\|_\\infty\\to 0$, the bound above $\\to 0$ uniformly.", r:4},
+        {t:"$|f_ng_n-fg|\\leq|f_n||g_n-g|+|g||f_n-f|\\leq M\\|g_n-g\\|_\\infty + N\\|f_n-f\\|_\\infty$.", r:2},
+        {t:"Therefore $f_ng_n\\to fg$ uniformly.", r:5},
+        {t:"Write $f_ng_n-fg = f_n(g_n-g)+g(f_n-f)$ and apply the triangle inequality.", r:0},
+        {t:"Taking suprema: $\\|f_ng_n-fg\\|_\\infty \\leq M\\|g_n-g\\|_\\infty + N\\|f_n-f\\|_\\infty$.", r:3},
+      ]},
+
+    { pnum:2, title:"Equicontinuous Dilation Family $\\Rightarrow$ $f$ Constant", src:"PS9 Exercise 3",
+      stmt:"Let $f:[0,\\infty)\\to\\mathbb{R}$ and $f_n(x)=f(nx)$. Suppose $\\{f_n\\}$ is uniformly equicontinuous. Show $f$ is constant.",
+      steps:[
+        {t:"For $n$ large enough: $|s/n - t/n| = |s-t|/n < \\delta$.", r:2},
+        {t:"Let $s,t\\geq 0$ be arbitrary. We want to show $f(s)=f(t)$. Let $\\varepsilon>0$.", r:0},
+        {t:"Applying equicontinuity with $x=s/n$, $y=t/n$: $|f_n(s/n)-f_n(t/n)|=|f(s)-f(t)|<\\varepsilon$.", r:3},
+        {t:"By equicontinuity, $\\exists\\delta>0$: $|x-y|<\\delta\\Rightarrow|f_n(x)-f_n(y)|<\\varepsilon$ for all $n$.", r:1},
+        {t:"Since $\\varepsilon>0$ was arbitrary and $|f(s)-f(t)|$ is fixed, $|f(s)-f(t)|=0$, so $f(s)=f(t)$.", r:4},
+      ]},
+
+    { pnum:3, title:"Pointwise Bounded + Equicontinuous $\\Rightarrow$ Uniformly Bounded", src:"PS9 Exercise 6",
+      stmt:"Let $X$ be compact, $\\{f_n\\}$ pointwise bounded and uniformly equicontinuous. Prove $\\{f_n\\}$ is uniformly bounded.",
+      steps:[
+        {t:"By equicontinuity, $\\exists\\delta>0$: $d(x,y)<\\delta\\Rightarrow|f_n(x)-f_n(y)|<1$ for all $n$.", r:0},
+        {t:"Set $C = M+1$. Then $|f_n(x)|\\leq M+1=C$ for all $x\\in X$ and all $n$.", r:4},
+        {t:"Since $X$ is compact, $\\{N_\\delta(x):x\\in X\\}$ has a finite subcover: $X\\subseteq N_\\delta(x_1)\\cup\\cdots\\cup N_\\delta(x_k)$.", r:1},
+        {t:"For any $x\\in X$: $x\\in N_\\delta(x_j)$ for some $j$, so $|f_n(x)|\\leq|f_n(x)-f_n(x_j)|+|f_n(x_j)|<1+M_j\\leq 1+M$.", r:3},
+        {t:"By pointwise boundedness, each $\\exists M_j$: $|f_n(x_j)|\\leq M_j$ for all $n$. Let $M=\\max_j M_j$.", r:2},
+      ]},
+
+    { pnum:4, title:"Integral Test", src:"PS9 Exercise 4",
+      stmt:"Let $f:[1,\\infty)\\to\\mathbb{R}$ be nonneg and monotone decreasing. Prove $\\int_1^\\infty f$ converges iff $\\sum_{n=1}^\\infty f(n)$ converges.",
+      steps:[
+        {t:"$(\\Leftarrow)$: If $\\sum f(n)$ converges, then $\\int_1^{N+1}f\\leq\\sum_{n=1}^N f(n)\\leq\\sum_{n=1}^\\infty f(n)<\\infty$ for all $N$. Hence $\\int_1^\\infty f$ converges.", r:3},
+        {t:"For $x\\in[n,n+1]$: $f(n+1)\\leq f(x)\\leq f(n)$ (since $f$ is decreasing).", r:0},
+        {t:"$(\\Rightarrow)$: If $\\int_1^\\infty f$ converges, the partial sums $\\sum_{n=2}^{N+1}f(n)\\leq\\int_1^\\infty f<\\infty$ are bounded, so $\\sum f(n)$ converges.", r:2},
+        {t:"Summing over $n=1,\\ldots,N$: $\\displaystyle\\sum_{n=2}^{N+1}f(n) \\leq \\int_1^{N+1}f(x)\\,dx \\leq \\sum_{n=1}^N f(n)$.", r:1},
+      ]},
+  ]},
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let correct = 0, attempted = 0;
+const total = PS.reduce((s,p)=>s+p.probs.length,0);
+const state = {}; // state[pid] = { selected: [], checked: false, revealed: false }
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render(){
+  const nav = document.getElementById('navs');
+  const pages = document.getElementById('pages');
+
+  PS.forEach((sheet, si)=>{
+    // Nav tab
+    const btn = document.createElement('button');
+    btn.className = 'nt' + (si===0?' active':'');
+    btn.id = 'nt'+si;
+    btn.textContent = sheet.label;
+    btn.onclick = ()=>showPage(si);
+    nav.appendChild(btn);
+
+    // Page
+    const pg = document.createElement('div');
+    pg.className = 'page' + (si===0?' active':'');
+    pg.id = 'pg'+si;
+
+    const hdr = document.createElement('div');
+    hdr.className = 'ps-header';
+    hdr.innerHTML = `<div class="ps-badge">${sheet.label}</div><h1>${sheet.topic}</h1><p class="ps-desc">Arrange the proof steps in logical order — click steps in the sequence they should appear.</p>`;
+    pg.appendChild(hdr);
+
+    const prog = document.createElement('div');
+    prog.className = 'page-progress';
+    prog.id = 'pgprog'+si;
+    prog.textContent = '0 / '+sheet.probs.length+' completed';
+    pg.appendChild(prog);
+
+    sheet.probs.forEach((prob, pi)=>{
+      const pid = `p${si}_${pi}`;
+      state[pid] = {selected:[], checked:false, revealed:false};
+
+      const card = document.createElement('div');
+      card.className = 'prob';
+      card.id = pid;
+
+      // Sort steps by rank to build correctOrder, but display in given order
+      const n = prob.steps.length;
+      // Build the answer: for each displayed step (in order), what is its rank?
+      // User must click in rank order 0,1,2,...
+      // correctClickOrder[i] = the display index of the step with rank i (sorted)
+      const sortedByRank = [...prob.steps.map((s,i)=>({...s,displayIdx:i}))].sort((a,b)=>a.r-b.r);
+
+      card.innerHTML = `
+        <div class="prob-header">
+          <div class="prob-num">PROBLEM ${si+1}.${pi+1}</div>
+          <div class="prob-title">${prob.title}</div>
+          <div class="prob-src">${prob.src}</div>
+        </div>
+        <div class="prob-stmt"><strong>Statement:</strong> ${prob.stmt}</div>
+        <div class="arrange-label">Click steps in the correct proof order</div>
+        <div class="steps-grid" id="sg_${pid}">
+          ${prob.steps.map((s,i)=>`
+            <div class="step" id="step_${pid}_${i}" onclick="clickStep('${pid}',${i})">
+              <div class="step-badge" id="badge_${pid}_${i}">—</div>
+              <div class="step-text">${s.t}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-check" id="btncheck_${pid}" onclick="checkProb('${pid}')" disabled>Check Order</button>
+          <button class="btn btn-reset" onclick="resetProb('${pid}')">Reset</button>
+          <button class="btn btn-reveal" onclick="revealProb('${pid}')">Show Answer</button>
+        </div>
+        <div class="feedback" id="fb_${pid}"></div>
+        <div class="reveal-note" id="rev_${pid}">
+          <strong>Correct order:</strong> ${sortedByRank.map((s,i)=>`<strong>${i+1}.</strong> ${s.t}`).join(' &nbsp;→&nbsp; ')}
+        </div>
+      `;
+
+      pg.appendChild(card);
+    });
+
+    pages.appendChild(pg);
+  });
+
+  // Render math
+  renderMathInElement(document.body,{
+    delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+    throwOnError:false
+  });
+}
+
+function showPage(si){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg'+si).classList.add('active');
+  document.getElementById('nt'+si).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function clickStep(pid, idx){
+  const s = state[pid];
+  if(s.checked || s.revealed) return;
+
+  const sel = s.selected;
+  const alreadyAt = sel.indexOf(idx);
+
+  if(alreadyAt !== -1){
+    // Deselect: remove from selected
+    sel.splice(alreadyAt, 1);
+    refreshBadges(pid);
+    document.getElementById('btncheck_'+pid).disabled = (sel.length === 0);
+    return;
+  }
+
+  // Get number of steps
+  const sheet = PS[parseInt(pid.split('_')[0].replace('p',''))];
+  const probIdx = parseInt(pid.split('_')[1]);
+  const n = sheet.probs[probIdx].steps.length;
+
+  if(sel.length < n){
+    sel.push(idx);
+    refreshBadges(pid);
+    const allSelected = sel.length === n;
+    document.getElementById('btncheck_'+pid).disabled = !allSelected;
+  }
+}
+
+function refreshBadges(pid){
+  const s = state[pid];
+  const sheet = PS[parseInt(pid.split('_')[0].replace('p',''))];
+  const probIdx = parseInt(pid.split('_')[1]);
+  const n = sheet.probs[probIdx].steps.length;
+
+  for(let i=0;i<n;i++){
+    const badge = document.getElementById(`badge_${pid}_${i}`);
+    const step = document.getElementById(`step_${pid}_${i}`);
+    const pos = s.selected.indexOf(i);
+    if(pos !== -1){
+      badge.textContent = pos+1;
+      step.classList.add('selected');
+      step.classList.remove('correct','wrong');
+    } else {
+      badge.textContent = '—';
+      step.classList.remove('selected','correct','wrong');
+    }
+  }
+}
+
+function checkProb(pid){
+  const s = state[pid];
+  if(s.checked) return;
+  s.checked = true;
+
+  const si = parseInt(pid.split('_')[0].replace('p',''));
+  const pi = parseInt(pid.split('_')[1]);
+  const prob = PS[si].probs[pi];
+  const n = prob.steps.length;
+
+  // Build correct order: for each click position 0..n-1, what display index should be there?
+  // The correct sequence is: display indices sorted by their rank
+  const sortedByRank = [...prob.steps.map((step,i)=>({r:step.r,i}))].sort((a,b)=>a.r-b.r);
+  const correctOrder = sortedByRank.map(x=>x.i);
+
+  const userOrder = s.selected; // display indices in user's click order
+
+  let allRight = true;
+  for(let pos=0;pos<n;pos++){
+    const displayIdx = userOrder[pos];
+    const step = document.getElementById(`step_${pid}_${displayIdx}`);
+    const badge = document.getElementById(`badge_${pid}_${displayIdx}`);
+    badge.textContent = pos+1;
+    if(correctOrder[pos] === displayIdx){
+      step.classList.add('correct');
+      step.classList.remove('selected','wrong');
+    } else {
+      step.classList.add('wrong');
+      step.classList.remove('selected','correct');
+      allRight = false;
+    }
+  }
+
+  const fb = document.getElementById(`fb_${pid}`);
+  fb.className = 'feedback show ' + (allRight ? 'fb-ok' : 'fb-no');
+  fb.textContent = allRight
+    ? '✓ Correct! All steps in the right order.'
+    : '✗ Not quite. Red steps are out of place. Click "Show Answer" to see the correct sequence.';
+
+  document.getElementById(`btncheck_${pid}`).disabled = true;
+  attempted++;
+  if(allRight){ correct++; updateScore(); }
+  else { updateScore(); }
+  updatePageProgress(si);
+}
+
+function resetProb(pid){
+  const s = state[pid];
+  s.selected = []; s.checked = false; s.revealed = false;
+
+  const si = parseInt(pid.split('_')[0].replace('p',''));
+  const pi = parseInt(pid.split('_')[1]);
+  const n = PS[si].probs[pi].steps.length;
+
+  for(let i=0;i<n;i++){
+    document.getElementById(`step_${pid}_${i}`).className = 'step';
+    document.getElementById(`badge_${pid}_${i}`).textContent = '—';
+  }
+  document.getElementById(`fb_${pid}`).className = 'feedback';
+  document.getElementById(`rev_${pid}`).className = 'reveal-note';
+  document.getElementById(`btncheck_${pid}`).disabled = true;
+}
+
+function revealProb(pid){
+  const s = state[pid];
+  s.revealed = true;
+
+  const si = parseInt(pid.split('_')[0].replace('p',''));
+  const pi = parseInt(pid.split('_')[1]);
+  const prob = PS[si].probs[pi];
+  const n = prob.steps.length;
+
+  const sortedByRank = [...prob.steps.map((step,i)=>({r:step.r,i}))].sort((a,b)=>a.r-b.r);
+  const correctOrder = sortedByRank.map(x=>x.i);
+
+  for(let pos=0;pos<n;pos++){
+    const di = correctOrder[pos];
+    const step = document.getElementById(`step_${pid}_${di}`);
+    const badge = document.getElementById(`badge_${pid}_${di}`);
+    badge.textContent = pos+1;
+    step.className = 'step revealed-ok';
+  }
+
+  document.getElementById(`rev_${pid}`).className = 'reveal-note show';
+  document.getElementById(`btncheck_${pid}`).disabled = true;
+  updatePageProgress(si);
+}
+
+function updateScore(){
+  document.getElementById('score-val').textContent = `${correct} / ${total}`;
+  const pct = total>0 ? Math.round(correct/total*100) : 0;
+  document.getElementById('score-pct').textContent = `(${pct}%)`;
+  const prog = Math.round(attempted/total*100);
+  document.getElementById('pfill').style.width = prog+'%';
+}
+
+function updatePageProgress(si){
+  const sheet = PS[si];
+  let done = 0;
+  sheet.probs.forEach((_,pi)=>{
+    const pid = `p${si}_${pi}`;
+    if(state[pid].checked || state[pid].revealed) done++;
+  });
+  document.getElementById(`pgprog${si}`).textContent = `${done} / ${sheet.probs.length} completed`;
+}
+
+function init(){
+  render();
+  updateScore();
+  window.addEventListener('scroll',()=>{
+    const h = document.documentElement.scrollHeight-window.innerHeight;
+    document.getElementById('pfill').style.width = (h>0?window.scrollY/h*100:0)+'%';
+  });
+}
+</script>
+</body>
+</html>
