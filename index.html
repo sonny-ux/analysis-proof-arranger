@@ -135,7 +135,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font
 
 <div class="scorebar">
   <span class="score-txt">Score</span>
-  <span class="score-val" id="score-val">0 / 32</span>
+  <span class="score-val" id="score-val">0 / 42</span>
   <span class="score-txt" id="score-pct" style="margin-left:4px"></span>
 </div>
 
@@ -325,6 +325,26 @@ const PS = [
         {t:"For each $k$, $\\exists a_k\\in\\mathcal{A}$ with $|a_k - y|<1/k$ (since $y$ is a limit point of $\\mathcal{A}$).", r:1},
         {t:"Then $|x_{n_k}-y| \\leq |x_{n_k}-a_k|+|a_k-y| < 2/k\\to 0$, so $x_{n_k}\\to y$.", r:3},
       ]},
+
+    { pnum:5, title:"$\\limsup$ Tail Bound", src:"PS5 Exercise 2",
+      stmt:"Let $\\{x_n\\}$ be a bounded sequence with $\\limsup_{n\\to\\infty} x_n = L$. Prove: if $y > L$, then $\\exists N$ such that $x_n < y$ for all $n\\geq N$.",
+      steps:[
+        {t:"Set $\\varepsilon = (y-L)/2 > 0$ and recall $\\limsup x_n = \\lim_{n\\to\\infty}\\sup_{k\\geq n}x_k = L$.", r:1},
+        {t:"Let $y > L$.", r:0},
+        {t:"For all $n\\geq N$: $x_n\\leq\\sup_{k\\geq N}x_k < (L+y)/2 < y$.", r:3},
+        {t:"Since $\\varepsilon > 0$, $\\exists N$: $\\sup_{k\\geq N}x_k < L+\\varepsilon = (L+y)/2$.", r:2},
+        {t:"Therefore $x_n < y$ for all $n\\geq N$.", r:4},
+      ]},
+
+    { pnum:6, title:"Convergence $\\Leftrightarrow$ $\\limsup = \\liminf$", src:"PS5 Exercise 2",
+      stmt:"Prove that a bounded sequence $\\{x_n\\}$ in $\\mathbb{R}$ converges if and only if $\\limsup_{n\\to\\infty} x_n = \\liminf_{n\\to\\infty} x_n$.",
+      steps:[
+        {t:"$(\\Rightarrow)$: Suppose $x_n\\to L$. For $\\varepsilon>0$, $\\exists N$: $L-\\varepsilon < x_n < L+\\varepsilon$ for all $n\\geq N$.", r:0},
+        {t:"Hence $\\liminf x_n\\geq L-\\varepsilon$ and $\\limsup x_n\\leq L+\\varepsilon$. Since $\\varepsilon>0$ is arbitrary: $\\limsup x_n = \\liminf x_n = L$.", r:1},
+        {t:"$(\\Leftarrow)$: Suppose $\\limsup x_n = \\liminf x_n = L$. For $\\varepsilon>0$, $\\exists N$: $\\sup_{k\\geq N}x_k < L+\\varepsilon$ and $\\inf_{k\\geq N}x_k > L-\\varepsilon$.", r:2},
+        {t:"For all $n\\geq N$: $L-\\varepsilon < x_n < L+\\varepsilon$, so $|x_n-L| < \\varepsilon$.", r:3},
+        {t:"Therefore $x_n\\to L$, completing both directions.", r:4},
+      ]},
   ]},
 
   { label:"PS 6", topic:"Series and Continuity", probs:[
@@ -371,6 +391,27 @@ const PS = [
         {t:"Separate into even and odd powers: $\\exp(iz) = \\sum_{k=0}^\\infty\\frac{(iz)^{2k}}{(2k)!} + \\sum_{k=0}^\\infty\\frac{(iz)^{2k+1}}{(2k+1)!}$.", r:1},
         {t:"Even terms: $(iz)^{2k} = i^{2k}z^{2k} = (-1)^kz^{2k}$. So their sum is $\\sum_{k=0}^\\infty\\frac{(-1)^kz^{2k}}{(2k)!} = \\cos z$.", r:2},
       ]},
+
+    { pnum:5, title:"Ratio Test: $\\limsup\\, a_{i+1}/a_i < 1$", src:"PS6 Exercise 1",
+      stmt:"Let $\\{a_i\\}_{i\\geq 0}$ be a sequence of positive reals. Prove $\\sum a_i$ converges absolutely if $\\limsup_{i\\to\\infty} a_{i+1}/a_i < 1$.",
+      steps:[
+        {t:"By definition of $\\limsup$, $\\exists N$: $a_{i+1}/a_i < r$ for all $i\\geq N$.", r:1},
+        {t:"By comparison with a convergent geometric series, $\\sum a_i$ converges absolutely.", r:4},
+        {t:"Let $\\alpha = \\limsup_{i\\to\\infty} a_{i+1}/a_i < 1$. Choose $r$ with $\\alpha < r < 1$.", r:0},
+        {t:"Thus $\\sum_{k=1}^\\infty a_{N+k} < a_N\\sum_{k=1}^\\infty r^k = a_Nr/(1-r) < \\infty$ since $0 < r < 1$.", r:3},
+        {t:"By induction: $a_{N+k} < r^k a_N$ for all $k\\geq 1$.", r:2},
+      ]},
+
+    { pnum:6, title:"Abel's Test: Convergent Series $\\times$ Monotone Sequence", src:"PS6 Exercise 3",
+      stmt:"Let $\\sum a_n$ be convergent and $\\{b_n\\}$ monotonically increasing and bounded. Prove $\\sum a_nb_n$ converges.",
+      steps:[
+        {t:"Let $A_n = \\sum_{k=0}^n a_k$. Summation by parts: $\\sum_{n=0}^N a_n(b_n-b) = A_N(b_N-b) - \\sum_{n=0}^{N-1}A_n(b_{n+1}-b_n)$.", r:2},
+        {t:"Since $\\{b_n\\}$ is monotone increasing and bounded, it converges to some $b\\in\\mathbb{R}$ by MCT.", r:0},
+        {t:"Since $\\{A_n\\}$ is bounded and $\\sum(b_{n+1}-b_n) = b-b_0 < \\infty$ (telescoping), $\\sum A_n(b_{n+1}-b_n)$ converges absolutely.", r:4},
+        {t:"Write $a_nb_n = a_n(b_n-b)+a_nb$. Since $\\sum a_n$ converges, $\\sum a_nb = b\\sum a_n$ converges.", r:1},
+        {t:"As $N\\to\\infty$: $A_N\\to A$ (finite) and $b_N-b\\to 0$, so $A_N(b_N-b)\\to 0$.", r:3},
+        {t:"Therefore $\\sum a_n(b_n-b)$ converges, so $\\sum a_nb_n = \\sum a_n(b_n-b) + b\\sum a_n$ converges.", r:5},
+      ]},
   ]},
 
   { label:"PS 7", topic:"Continuity and Differentiation", probs:[
@@ -414,6 +455,27 @@ const PS = [
         {t:"Then $|x-y|=\\delta/2<\\delta$.", r:2},
         {t:"But $|f(x)-f(y)| = (x+y)(y-x) = \\left(\\frac{2}{\\delta}+\\frac{\\delta}{2}\\right)\\frac{\\delta}{2} = 1 + \\frac{\\delta^2}{4} > 1 = \\varepsilon$.", r:3},
         {t:"So for every $\\delta>0$ there exist $x,y$ with $|x-y|<\\delta$ but $|f(x)-f(y)|\\geq\\varepsilon$. Not uniformly continuous.", r:4},
+      ]},
+
+    { pnum:5, title:"The Chain Rule", src:"PS7 Exercise 8",
+      stmt:"Let $f,g:\\mathbb{R}\\to\\mathbb{R}$ be differentiable. Prove $(f\\circ g)'(x) = f'(g(x))\\cdot g'(x)$.",
+      steps:[
+        {t:"Fix $x$. Define $\\varphi(t) = [f(t)-f(g(x))]/(t-g(x))$ for $t\\neq g(x)$, and $\\varphi(g(x)) = f'(g(x))$.", r:0},
+        {t:"For $y\\neq x$: $\\dfrac{f(g(y))-f(g(x))}{y-x} = \\varphi(g(y))\\cdot\\dfrac{g(y)-g(x)}{y-x}$.", r:3},
+        {t:"Since $f$ is differentiable at $g(x)$, $\\varphi$ is continuous at $g(x)$ and $f(t)-f(g(x))=\\varphi(t)\\cdot(t-g(x))$ for all $t$.", r:1},
+        {t:"As $y\\to x$: $g(y)\\to g(x)$, so $\\varphi(g(y))\\to f'(g(x))$ and $(g(y)-g(x))/(y-x)\\to g'(x)$.", r:4},
+        {t:"Substituting $t=g(y)$: $f(g(y))-f(g(x)) = \\varphi(g(y))\\cdot(g(y)-g(x))$.", r:2},
+        {t:"Therefore $(f\\circ g)'(x) = f'(g(x))\\cdot g'(x)$.", r:5},
+      ]},
+
+    { pnum:6, title:"Path-Connected $\\Rightarrow$ Connected", src:"PS7 Exercise 5",
+      stmt:"Let $(X,d)$ be a metric space and $A\\subseteq X$ path-connected. Show $A$ is connected.",
+      steps:[
+        {t:"Pick $u\\in U$, $v\\in V$. By path-connectedness, $\\exists$ continuous $\\gamma:[0,1]\\to A$ with $\\gamma(0)=u$ and $\\gamma(1)=v$.", r:1},
+        {t:"But $[0,1]$ is connected — contradiction. Therefore $A$ is connected.", r:4},
+        {t:"Suppose for contradiction $A = U\\cup V$ with $U,V$ nonempty, disjoint, and open in $A$.", r:0},
+        {t:"$W_1\\cup W_2=[0,1]$, $W_1\\cap W_2=\\emptyset$, $0\\in W_1$, $1\\in W_2$: this disconnects $[0,1]$.", r:3},
+        {t:"Let $W_1=\\gamma^{-1}(U)$, $W_2=\\gamma^{-1}(V)$. Since $\\gamma$ is continuous and $U,V$ are open in $A$, both $W_1,W_2$ are open in $[0,1]$.", r:2},
       ]},
   ]},
 
@@ -459,6 +521,28 @@ const PS = [
         {t:"Suppose for contradiction $f(x_0)^2>0$ for some $x_0\\in[a,b]$.", r:2},
         {t:"Therefore $f(x)^2=0$ for all $x$, so $f\\equiv 0$.", r:5},
       ]},
+
+    { pnum:5, title:"Linearity of the Riemann Integral", src:"PS8 Exercise 2.1",
+      stmt:"Let $f,g\\in\\mathscr{R}[a,b]$. Prove $\\int_a^b(f+g)\\,dx = \\int_a^b f\\,dx + \\int_a^b g\\,dx$.",
+      steps:[
+        {t:"From step 1: $\\overline{\\int}(f+g)\\leq\\overline{\\int}f+\\overline{\\int}g = \\int f+\\int g$.", r:3},
+        {t:"From step 2: $\\underline{\\int}(f+g)\\geq\\underline{\\int}f+\\underline{\\int}g = \\int f+\\int g$.", r:4},
+        {t:"For any partition $P$: $\\sup(f+g)\\leq\\sup f+\\sup g$ on each subinterval, so $U(P,f+g)\\leq U(P,f)+U(P,g)$.", r:0},
+        {t:"Since $f+g\\in\\mathscr{R}$, $\\overline{\\int}(f+g)=\\underline{\\int}(f+g)=\\int(f+g)$. Combined with steps 3–4: $\\int_a^b(f+g)=\\int_a^b f+\\int_a^b g$.", r:5},
+        {t:"Similarly $L(P,f+g)\\geq L(P,f)+L(P,g)$.", r:1},
+        {t:"$U(P,f+g)-L(P,f+g)\\leq(U(P,f)-L(P,f))+(U(P,g)-L(P,g))$. For any $\\varepsilon>0$ choose $P$ to make this less than $\\varepsilon$: so $f+g\\in\\mathscr{R}[a,b]$.", r:2},
+      ]},
+
+    { pnum:6, title:"Integration by Substitution", src:"PS8 Exercise 3",
+      stmt:"Let $\\varphi$ be $C^1$ on $[a,b]$ and $f$ continuous on an interval containing $\\varphi([a,b])$. Prove $\\int_a^b f(\\varphi(x))\\varphi'(x)\\,dx = \\int_{\\varphi(a)}^{\\varphi(b)} f(t)\\,dt$.",
+      steps:[
+        {t:"Since $\\varphi'$ and $f\\circ\\varphi$ are continuous, $G'\\in\\mathscr{R}[a,b]$.", r:2},
+        {t:"Also by FTC Part 2: $\\int_{\\varphi(a)}^{\\varphi(b)} f(t)\\,dt = F(\\varphi(b))-F(\\varphi(a))$.", r:4},
+        {t:"Since $f$ is continuous, it has an antiderivative $F$ with $F'=f$ (by FTC Part 1).", r:0},
+        {t:"By FTC Part 2: $\\int_a^b f(\\varphi(x))\\varphi'(x)\\,dx = G(b)-G(a) = F(\\varphi(b))-F(\\varphi(a))$.", r:3},
+        {t:"Define $G(x)=F(\\varphi(x))$. By the chain rule: $G'(x)=f(\\varphi(x))\\cdot\\varphi'(x)$.", r:1},
+        {t:"Therefore $\\int_a^b f(\\varphi(x))\\varphi'(x)\\,dx = \\int_{\\varphi(a)}^{\\varphi(b)} f(t)\\,dt$.", r:5},
+      ]},
   ]},
 
   { label:"PS 9", topic:"Sequences of Functions", probs:[
@@ -501,6 +585,28 @@ const PS = [
         {t:"For $x\\in[n,n+1]$: $f(n+1)\\leq f(x)\\leq f(n)$ (since $f$ is decreasing).", r:0},
         {t:"$(\\Rightarrow)$: If $\\int_1^\\infty f$ converges, the partial sums $\\sum_{n=2}^{N+1}f(n)\\leq\\int_1^\\infty f<\\infty$ are bounded, so $\\sum f(n)$ converges.", r:2},
         {t:"Summing over $n=1,\\ldots,N$: $\\displaystyle\\sum_{n=2}^{N+1}f(n) \\leq \\int_1^{N+1}f(x)\\,dx \\leq \\sum_{n=1}^N f(n)$.", r:1},
+      ]},
+
+    { pnum:5, title:"Differentiation of Power Series", src:"PS9 Exercise 5",
+      stmt:"Let $f(x)=\\sum_{n=0}^\\infty c_nx^n$ with radius of convergence $R>0$. Show $f$ is differentiable on $(-R,R)$ with $f'(x)=\\sum_{n=1}^\\infty nc_nx^{n-1}$, and this differentiated series also has radius of convergence $R$.",
+      steps:[
+        {t:"Fix $x_0\\in(-R,R)$. Choose $r$ with $|x_0| < r < R$. For $|x|\\leq r$: $|nc_nx^{n-1}|\\leq n|c_n|r^{n-1}$.", r:1},
+        {t:"The differentiated series has radius of convergence $R$: $\\limsup|nc_n|^{1/n}=\\limsup|c_n|^{1/n}$ since $n^{1/n}\\to 1$.", r:0},
+        {t:"Each partial sum $S_N(x)=\\sum_{n=0}^N c_nx^n$ is differentiable, with derivatives $\\sum_{n=1}^N nc_nx^{n-1}$ converging uniformly on $[-r,r]$.", r:3},
+        {t:"Since $\\sum n|c_n|r^{n-1}$ converges (radius $R > r$), by the Weierstrass $M$-test $\\sum nc_nx^{n-1}$ converges uniformly on $[-r,r]$.", r:2},
+        {t:"By Theorem 7.17 (differentiation of uniformly convergent sequences): $f$ is differentiable on $(-r,r)$ with $f'(x)=\\sum_{n=1}^\\infty nc_nx^{n-1}$.", r:4},
+        {t:"Since $x_0\\in(-R,R)$ was arbitrary, $f$ is differentiable on $(-R,R)$ with the stated formula.", r:5},
+      ]},
+
+    { pnum:6, title:"Weierstrass $M$-Test", src:"Rudin Theorem 7.10",
+      stmt:"Let $\\{f_n\\}$ be functions on a set $E$ with $|f_n(x)|\\leq M_n$ for all $x\\in E$. If $\\sum M_n < \\infty$, prove $\\sum f_n$ converges uniformly on $E$.",
+      steps:[
+        {t:"Since $\\sum M_n < \\infty$, for any $\\varepsilon>0$, $\\exists N_0$: $\\sum_{n=N+1}^M M_n < \\varepsilon$ for all $M > N\\geq N_0$.", r:1},
+        {t:"By completeness of $\\mathbb{R}$, $s_N(x)$ converges pointwise to some $f(x)=\\sum_{n=1}^\\infty f_n(x)$.", r:3},
+        {t:"Let $s_N(x)=\\sum_{n=1}^N f_n(x)$. For $M > N$ and any $x\\in E$: $|s_M(x)-s_N(x)|\\leq\\sum_{n=N+1}^M M_n$.", r:0},
+        {t:"Taking $M\\to\\infty$ with $N\\geq N_0$: $|f(x)-s_N(x)|\\leq\\sum_{n=N+1}^\\infty M_n < \\varepsilon$ for all $x\\in E$.", r:4},
+        {t:"Therefore $|s_M(x)-s_N(x)| < \\varepsilon$ for all $M > N\\geq N_0$ and all $x\\in E$ — the uniform Cauchy criterion.", r:2},
+        {t:"Therefore $\\sum f_n \\to f$ uniformly on $E$.", r:5},
       ]},
   ]},
 ];
