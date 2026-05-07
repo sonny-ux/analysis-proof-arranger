@@ -106,9 +106,22 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font
   .page-progress{padding:8px 32px 0;}
   .arrange-label,.feedback,.reveal-note{padding-left:20px;padding-right:20px;}
 }
-@media(max-width:600px){body{font-size:16px;}.prob{margin:10px 12px;}.ps-header{padding:18px 14px 10px;}.ps-header h1{font-size:1.3rem;}}
+@media(max-width:600px){
+  body{font-size:16px;}
+  .prob{margin:10px 8px;}
+  .ps-header{padding:18px 12px 10px;}
+  .ps-header h1{font-size:1.25rem;}
+  .steps-grid{padding:10px 12px;}
+  .step{padding:10px 12px;}
+  .btn-row{padding:8px 12px 12px;gap:6px;}
+  .btn{padding:6px 11px;font-size:8px;}
+  .prob-stmt{padding:10px 12px;}
+  .arrange-label{padding:7px 12px;}
+  .feedback,.reveal-note{padding:8px 12px;}
+}
+.step-text{font-size:.9rem;line-height:1.65;flex:1;min-width:0;overflow-wrap:break-word;word-break:break-word;}
 .katex{font-size:.97em;}
-.katex-display{overflow-x:auto;margin:.3em 0;}
+.katex-display{overflow-x:auto;margin:.3em 0;max-width:100%;}
 </style>
 </head>
 <body>
@@ -492,6 +505,13 @@ const PS = [
   ]},
 ];
 
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+// Escape HTML so that < > & in LaTeX step text don't corrupt the DOM.
+// KaTeX auto-render reads textContent (where &lt; → <), so math still renders.
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let correct = 0, attempted = 0;
 const total = PS.reduce((s,p)=>s+p.probs.length,0);
@@ -545,16 +565,16 @@ function render(){
       card.innerHTML = `
         <div class="prob-header">
           <div class="prob-num">PROBLEM ${si+1}.${pi+1}</div>
-          <div class="prob-title">${prob.title}</div>
+          <div class="prob-title">${escHtml(prob.title)}</div>
           <div class="prob-src">${prob.src}</div>
         </div>
-        <div class="prob-stmt"><strong>Statement:</strong> ${prob.stmt}</div>
+        <div class="prob-stmt"><strong>Statement:</strong> ${escHtml(prob.stmt)}</div>
         <div class="arrange-label">Click steps in the correct proof order</div>
         <div class="steps-grid" id="sg_${pid}">
           ${prob.steps.map((s,i)=>`
             <div class="step" id="step_${pid}_${i}" onclick="clickStep('${pid}',${i})">
               <div class="step-badge" id="badge_${pid}_${i}">—</div>
-              <div class="step-text">${s.t}</div>
+              <div class="step-text">${escHtml(s.t)}</div>
             </div>
           `).join('')}
         </div>
@@ -565,7 +585,7 @@ function render(){
         </div>
         <div class="feedback" id="fb_${pid}"></div>
         <div class="reveal-note" id="rev_${pid}">
-          <strong>Correct order:</strong> ${sortedByRank.map((s,i)=>`<strong>${i+1}.</strong> ${s.t}`).join(' &nbsp;→&nbsp; ')}
+          <strong>Correct order:</strong> ${sortedByRank.map((s,i)=>`<strong>${i+1}.</strong> ${escHtml(s.t)}`).join(' &nbsp;→&nbsp; ')}
         </div>
       `;
 
